@@ -22,7 +22,8 @@ const state = {
   selectedRouteIndex: 0,
   mapLayer: 'satellite',
   pickTargetIndex: null,
-  selectedCharger: null
+  selectedCharger: null,
+  btnProceedNav: document.getElementById('btnProceedNav')
 };
 
 const MIN_ARRIVAL_BATTERY_PCT = 5; // Must arrive at final destination with > 5% battery
@@ -1137,18 +1138,41 @@ function renderAutoInsertedChargerMarker(charger) {
     .addTo(autoChargerGroup);
 }
 
+function openNavigationForRoute(routeIndex) {
+  if (!state.routes[routeIndex]) return;
+
+  state.selectedRouteIndex = routeIndex;
+  drawRoutesOnMap(false);
+
+  const activeTripData = {
+    vehicle: state.vehicle,
+    points: state.points.filter((p) => p.lat !== null && p.lon !== null),
+    route: state.routes[routeIndex],
+    savedAt: new Date().toISOString()
+  };
+
+  localStorage.setItem('activeTripData', JSON.stringify(activeTripData));
+  document.body.classList.add('fade-out');
+
+  setTimeout(() => {
+    window.location.href = 'navigation.html';
+  }, 400);
+}
+
 function renderRouteOptions() {
   const count = state.routes.length;
   dom.routesCount.textContent = count + ' available';
 
+  dom.routesList.innerHTML = '';
+
   if (count === 0) {
     dom.routesEmpty.style.display = 'block';
-    dom.routesList.innerHTML = '';
+    if (dom.btnProceedNav) dom.btnProceedNav.style.display = 'none';
     return;
   }
 
   dom.routesEmpty.style.display = 'none';
-  dom.routesList.innerHTML = '';
+  if (dom.btnProceedNav) dom.btnProceedNav.style.display = 'none';
 
   state.routes.forEach((route, idx) => {
     const isSelected = idx === state.selectedRouteIndex;
@@ -1179,24 +1203,29 @@ function renderRouteOptions() {
       </div>
     `;
 
-    const selectRoute = () => {
-      state.selectedRouteIndex = idx;
-      renderRouteOptions();
-      drawRoutesOnMap(true);
-    };
+    // Preview route on map when hovering over a card
+    card.addEventListener('mouseenter', () => {
+      if (state.selectedRouteIndex !== idx) {
+        state.selectedRouteIndex = idx;
+        dom.routesList.querySelectorAll('.route-card').forEach((el, i) => {
+          el.classList.toggle('selected', i === idx);
+        });
+        drawRoutesOnMap(false);
+      }
+    });
 
-    card.addEventListener('click', selectRoute);
+    // Clicking any route card saves it and moves to navigation.html
+    card.addEventListener('click', () => openNavigationForRoute(idx));
     card.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        selectRoute();
+        openNavigationForRoute(idx);
       }
     });
 
     dom.routesList.appendChild(card);
   });
 }
-
 function drawRoutesOnMap(fitBounds = false) {
   routeLayerGroup.clearLayers();
   if (!state.routes.length) return;
@@ -1446,3 +1475,29 @@ renderJourneyPoints();
 updatePointMarkersAndSubtitle();
 renderRouteOptions();
 loadSavedEvSetup();
+// Save selected route & transition to navigation.html with fade-out
+if (dom.btnProceedNav) {
+  dom.btnProceedNav.addEventListener('click', () => {
+    if (!state.routes.length) return;
+
+    const activeTripData = {
+      vehicle: state.vehicle,
+      points: state.points.filter((p) => p.lat !== null && p.lon !== null),
+      route: state.routes[state.selectedRouteIndex],
+      savedAt: new Date().toISOString()
+    };
+
+    localStorage.setItem('activeTripData', JSON.stringify(activeTripData));
+    document.body.classList.add('fade-out');
+
+    setTimeout(() => {
+      window.location.href = 'navigation.html';
+    }, 400);
+  });
+}
+
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted) {
+    document.body.classList.remove('fade-out');
+  }
+});
