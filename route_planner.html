@@ -250,47 +250,46 @@
           </div>
         </div>
 
-        <!-- Inline 3-Field Vehicle Input Bar (Starts Completely Empty) -->
         <div class="vehicle-inputs-panel" id="vehicleInputsPanel">
-          <div class="vehicle-inputs-grid">
-            <div class="mini-field">
-              <label class="mini-label" for="inputVehicleName">Vehicle name</label>
-              <input
-                type="text"
-                id="inputVehicleName"
-                class="mini-input"
-                placeholder="EV / Scooty name"
-                autocomplete="off"
-              />
-            </div>
-            <div class="mini-field">
-              <label class="mini-label" for="inputBatteryPct">Battery (%)</label>
-              <input
-                type="number"
-                id="inputBatteryPct"
-                class="mini-input"
-                placeholder="1 - 100"
-                min="1"
-                max="100"
-              />
-            </div>
-            <div class="mini-field">
-              <label class="mini-label" for="inputFullRange">Full range (km)</label>
-              <input
-                type="number"
-                id="inputFullRange"
-                class="mini-input"
-                placeholder="Max at 100%"
-                min="1"
-                max="2000"
-              />
-            </div>
-          </div>
-          <div class="safe-range-note">
-            <span>Safe usable range (15% reserve)</span>
-            <strong id="safeRangeReadout">-- km</strong>
-          </div>
-        </div>
+  <div class="vehicle-inputs-grid">
+    <div class="mini-field">
+      <label class="mini-label" for="inputVehicleName">Vehicle name</label>
+      <input
+        type="text"
+        id="inputVehicleName"
+        class="mini-input"
+        placeholder="EV / Scooty name"
+        autocomplete="off"
+      />
+    </div>
+    <div class="mini-field">
+      <label class="mini-label" for="inputBatteryPct">Battery (%)</label>
+      <input
+        type="number"
+        id="inputBatteryPct"
+        class="mini-input"
+        placeholder="1 - 100"
+        min="1"
+        max="100"
+      />
+    </div>
+    <div class="mini-field">
+      <label class="mini-label" for="inputFullRange">Current range (km)</label>
+      <input
+        type="number"
+        id="inputFullRange"
+        class="mini-input"
+        placeholder="Range on EV display"
+        min="1"
+        max="2000"
+      />
+    </div>
+  </div>
+  <div class="safe-range-note">
+    <span>Max direct range (&gt;5% left)</span>
+    <strong id="safeRangeReadout">-- km</strong>
+  </div>
+</div>
       </section>
 
       <!-- 3. PLAN YOUR DRIVE / JOURNEY POINTS -->
